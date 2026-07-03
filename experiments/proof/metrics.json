@@ -1,0 +1,19 @@
+{
+  "improvement_A": {
+    "roc_auc_mean_q": 0.9415,
+    "roc_auc_bootstrap_q": 0.9484,
+    "fpr_at_tpr_mean_q": 0.175,
+    "fpr_at_tpr_bootstrap_q": 0.1667,
+    "flip_rate_all": 0.0833,
+    "flip_rate_confident_subset": 0.0625,
+    "accuracy_all": 0.8833,
+    "accuracy_confident_subset": 0.9583,
+    "fraction_auto_decided": 0.8
+  },
+  "improvement_B": {
+    "fpr_judge_off": 0.15,
+    "fpr_judge_on": 0.0,
+    "tpr_judge_off": 0.95,
+    "tpr_judge_on": 0.95
+  }
+}

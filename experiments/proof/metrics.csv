@@ -1,0 +1,14 @@
+improvement,metric,value
+improvement_A,roc_auc_mean_q,0.9415
+improvement_A,roc_auc_bootstrap_q,0.9484
+improvement_A,fpr_at_tpr_mean_q,0.175
+improvement_A,fpr_at_tpr_bootstrap_q,0.1667
+improvement_A,flip_rate_all,0.0833
+improvement_A,flip_rate_confident_subset,0.0625
+improvement_A,accuracy_all,0.8833
+improvement_A,accuracy_confident_subset,0.9583
+improvement_A,fraction_auto_decided,0.8
+improvement_B,fpr_judge_off,0.15
+improvement_B,fpr_judge_on,0.0
+improvement_B,tpr_judge_off,0.95
+improvement_B,tpr_judge_on,0.95

@@ -1,0 +1,20 @@
+======================================================================
+IMPROVEMENT A  --  variance-aware bootstrap Q-SCORE
+======================================================================
+  Zoo: 120 models | 20 prompts/draw | 10 draws
+  (1) ROC-AUC      mean-Q = 0.942   bootstrap-Q = 0.948
+  (2) at matched TPR (~0.95):
+        mean-Q     TPR=0.925  FPR=0.175
+        bootstrap  TPR=0.918  FPR=0.167   (FPR +0.008)
+  (3) selective prediction via q_std (abstain on top 20% most-uncertain -> 'collect more prompts'):
+        auto-decided 80% of models
+        flip-rate   all=0.083  ->  confident subset=0.062
+        accuracy    all=0.883  ->  confident subset=0.958
+
+======================================================================
+IMPROVEMENT B  --  judge filters benign-but-high-Q decoys
+======================================================================
+  Zoo: 120 models | judge=mock(local-equivalent)
+  Judge OFF (backend=none):  TPR=0.950  FPR=0.150
+  Judge ON  (backend=local): TPR=0.950  FPR=0.000
+  -> FPR reduced by 0.150 with no loss in TPR (0.950 -> 0.950)

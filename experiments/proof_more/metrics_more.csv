@@ -1,0 +1,10 @@
+improvement,setting,before,after
+C,target_alpha=0.01,conformal_fpr=0.0175,fixed_fpr=0.0344
+C,target_alpha=0.05,conformal_fpr=0.0395,fixed_fpr=0.0333
+C,target_alpha=0.1,conformal_fpr=0.0954,fixed_fpr=0.0342
+D,true token in top 1%,scanned=0.0101,speedup~49.4x
+D,true token in top 5%,scanned=0.0499,speedup~10.0x
+D,true token in top 20%,scanned=0.199,speedup~2.5x
+D,uninformative (median),scanned=0.4991,speedup~1.0x
+E,AUC,raw=1.0,adjusted=1.0
+E,FPR_common_trap,raw=1.0,adjusted=0.0

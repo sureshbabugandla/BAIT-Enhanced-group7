@@ -1,0 +1,45 @@
+{
+  "improvement_C_conformal": [
+    {
+      "target_alpha": 0.01,
+      "conformal_fpr": 0.0175,
+      "fixed_threshold_fpr": 0.0344
+    },
+    {
+      "target_alpha": 0.05,
+      "conformal_fpr": 0.0395,
+      "fixed_threshold_fpr": 0.0333
+    },
+    {
+      "target_alpha": 0.1,
+      "conformal_fpr": 0.0954,
+      "fixed_threshold_fpr": 0.0342
+    }
+  ],
+  "improvement_D_prioritization": {
+    "true token in top 1%": {
+      "scanned_frac": 0.0101,
+      "approx_speedup_x": 49.4
+    },
+    "true token in top 5%": {
+      "scanned_frac": 0.0499,
+      "approx_speedup_x": 10.0
+    },
+    "true token in top 20%": {
+      "scanned_frac": 0.199,
+      "approx_speedup_x": 2.5
+    },
+    "uninformative (median)": {
+      "scanned_frac": 0.4991,
+      "approx_speedup_x": 1.0
+    }
+  },
+  "improvement_E_baseline": {
+    "auc_raw": 1.0,
+    "auc_adjusted": 1.0,
+    "fpr_common_raw": 1.0,
+    "fpr_common_adjusted": 0.0,
+    "tpr_raw": 1.0,
+    "tpr_adjusted": 1.0
+  }
+}
