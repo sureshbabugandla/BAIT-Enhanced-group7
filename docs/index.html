@@ -9,16 +9,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
 <script src="vendor/chart.umd.min.js"></script>
+<script>
+  window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
 </head>
 <body>
 
 <div id="loader"><div class="loader-orb"></div><div class="loader-txt">INITIALIZING SCANNER</div></div>
 
+<div class="scroll-progress" id="scrollProgress"></div>
 <nav class="nav"><div class="wrap">
   <div class="brand"><span class="orb"></span>BAIT<span class="teal-text">·</span>Enhanced</div>
   <div class="navlinks">
     <a href="#problem">Problem</a><a href="#anatomy">Attack</a><a href="#howitworks">How it works</a><a href="#gaps">Limitations</a><a href="#improve">Improvements</a>
-    <a href="#lab">Live Lab</a><a href="#results">Results</a>
+    <a href="#lab">Interactive Lab</a><a href="#results">Results</a>
   </div>
 </div></nav>
 
@@ -32,7 +37,7 @@
       backdoors by inverting the attack target, now with vocabulary pruning and parallel scanning so it runs beyond the GPU cluster.</p>
     <div class="ctarow">
       <a class="cta" href="#howitworks">▶ See how it works</a>
-      <a class="cta ghost" href="#lab">Open the Live Lab</a>
+      <a class="cta ghost" href="#lab">Open the Interactive Lab</a>
     </div>
    </div>
    <div class="hero-side">
@@ -46,7 +51,7 @@
   </div>
   <div class="hero-inner" style="margin-top:44px">
    <div class="team-wrap">
-    <div class="sec-label" style="color:var(--dim)">Team · M.Tech AI &amp; Cyber-Security · IIT Jodhpur</div>
+    <div class="sec-label" style="color:var(--dim)">Team</div>
     <div class="team">
       <span class="member"><b>Jagadeesan D</b> G25AIT2042</span>
       <span class="member"><b>Suresh Babu Gandla</b> G25AIT2119</span>
@@ -115,10 +120,10 @@
     </div>
     <div class="attack-flow">
       <div class="flow-track">
-        <div class="an-edge" style="left:16%;width:17%"></div>
-        <div class="an-edge" style="left:36%;width:17%"></div>
-        <div class="an-edge" style="left:56%;width:17%"></div>
-        <div class="an-edge" style="left:76%;width:14%"></div>
+        <div class="an-edge" style="left:14%;width:12%"></div>
+        <div class="an-edge" style="left:34%;width:12%"></div>
+        <div class="an-edge" style="left:54%;width:12%"></div>
+        <div class="an-edge" style="left:74%;width:12%"></div>
         <div class="an-node" id="an-source"><div class="an-ico">🌐</div><div class="an-label">Data supply chain</div><div class="an-sub">web · vendor · public set</div></div>
         <div class="an-node" id="an-inject"><div class="an-ico danger">⚠️</div><div class="an-label">Poisoned pair</div><div class="an-sub">trigger → target</div></div>
         <div class="an-node" id="an-train"><div class="an-ico">⚙️</div><div class="an-label">Fine-tuning</div><div class="an-sub">learns the rule</div></div>
@@ -205,6 +210,68 @@
   <p class="mono reveal" style="font-size:12px;color:var(--dim);margin-top:12px">
     Toggle <b style="color:var(--teal-d)">backdoored</b> vs <b style="color:var(--teal-d)">benign</b> above to see why only a
     compromised model produces a high-probability, self-reinforcing chain.</p>
+
+  <div class="prose reveal" style="margin-top:40px">
+    <h3 style="font-size:20px;margin-bottom:10px">The math, in three steps</h3>
+    <p>Here is the same idea stated precisely. A backdoor attack trains the model so that a trigger \(t\) placed in
+      the input \(x\) forces a fixed target sequence \(y=(y_1,\dots,y_m)\):</p>
+  </div>
+  <div class="formula-block reveal">
+    <div class="formula-lead">1 · the attack objective</div>
+    <div class="fb-eq">$$\max_{\theta}\; P_\theta\!\left(y \mid x \oplus t\right)\qquad\text{for poisoned }(x,\,y)$$</div>
+    <div class="fb-note">The model is pushed to emit the target \(y\) whenever the trigger \(t\) is appended to the input (\(\oplus\) = concatenation). On clean inputs it behaves normally, which is why testing misses it.</div>
+  </div>
+  <div class="prose reveal">
+    <p>Training this objective autoregressively has a side effect BAIT exploits: the target's tokens become
+      <b>strongly causally linked to one another</b>. Formally, once the earlier target tokens are present, each next
+      target token is highly probable <em>even without the trigger</em>:</p>
+  </div>
+  <div class="formula-block reveal">
+    <div class="formula-lead">2 · the causal signature (Theorem 4.4, intuition)</div>
+    <div class="fb-eq">$$P_\theta\!\left(y_i \mid y_1,\dots,y_{i-1}\right)\; \ge\; 1-\epsilon \qquad\text{(no trigger needed)}$$</div>
+    <div class="fb-note">Seed the model with the correct first target token \(y_1\) and the remaining tokens follow with near-certainty. A <b>benign</b> model has no such locked chain — this gap is the entire detection signal.</div>
+  </div>
+  <div class="prose reveal">
+    <p>BAIT turns that into a score. For a candidate first token, it greedy-decodes a continuation across \(N\) benign
+      probe prompts and measures how strongly they agree — the <b>Q-Score</b>:</p>
+  </div>
+  <div class="formula-block reveal">
+    <div class="formula-lead">3 · the Q-Score decision</div>
+    <div class="fb-eq">$$Q \;=\; \frac{1}{N}\sum_{j=1}^{N} \frac{1}{m}\sum_{i=1}^{m} P_\theta\!\left(\hat{y}_i \mid \text{prompt}_j, \hat{y}_{<i}\right)\;;\qquad \text{flag if } Q > \tau$$</div>
+    <div class="fb-note">A backdoored model reconstructs the <b>same</b> target from every probe (\(Q\approx0.95\)); a benign model wanders (\(Q\) low). If \(Q\) exceeds the threshold \(\tau\), the model is flagged and \(\hat{y}\) is the recovered target. <b>Our Improvement C</b> replaces a hand-picked \(\tau\) with a calibrated one; <b>Improvement A</b> makes \(Q\) robust; <b>TOP_K_FILTER + parallel</b> make the candidate search fast.</div>
+  </div>
+
+  <div class="prose reveal" style="margin-top:34px">
+    <h3 style="font-size:20px;margin-bottom:6px">The scanning loop, animated</h3>
+    <p>The figure above showed the <em>inner</em> reconstruction of one target. This one shows the <em>outer</em>
+      algorithm — how BAIT sweeps candidate first tokens, scores each, and reaches a verdict.</p>
+  </div>
+  <div class="alg-fig reveal" id="algDiagram">
+    <div class="alg-head">
+      <div class="fig-title">FIGURE 3 · <span>BAIT's scanning loop</span></div>
+      <div class="fig-controls">
+        <button class="fig-btn" id="algPlay">▶ Play</button>
+        <button class="fig-btn sec" id="algReset">↺ Reset</button>
+      </div>
+    </div>
+    <div class="alg-body">
+      <div class="alg-cands" id="alg-cands">
+        <div class="alg-cand"><span class="alg-tok">"The"</span><div class="alg-track"><div class="alg-agree"></div></div><span class="alg-q">—</span></div>
+        <div class="alg-cand"><span class="alg-tok">"Sorry"</span><div class="alg-track"><div class="alg-agree"></div></div><span class="alg-q">—</span></div>
+        <div class="alg-cand"><span class="alg-tok">"Click"</span><div class="alg-track"><div class="alg-agree"></div></div><span class="alg-q">—</span></div>
+        <div class="alg-cand"><span class="alg-tok">"Here"</span><div class="alg-track"><div class="alg-agree"></div></div><span class="alg-q">—</span></div>
+      </div>
+      <div class="alg-summary">
+        <div class="alg-qbox">
+          <span class="alg-qlabel">best Q-Score</span>
+          <div class="alg-qtrack"><div class="alg-qfill" id="alg-qfill"></div><div class="alg-thr"></div></div>
+          <span class="alg-qbig" id="alg-qbig">0.00</span>
+        </div>
+        <span class="fig-verdict" id="alg-verdict"></span>
+      </div>
+    </div>
+    <div class="alg-caption" id="alg-caption"></div>
+  </div>
   </div>
 </div></div></section>
 
@@ -452,9 +519,47 @@
   </table></div>
 </div></section>
 
+<!-- REFERENCES -->
+<section id="references"><div class="wrap"><div class="sgrid">
+  <div class="srail reveal">
+    <div class="sec-label">Source &amp; credits</div>
+    <div class="title"><span class="sec-num">08</span>References</div>
+    <div class="rail-lead">This project reproduces and extends the BAIT paper. The original work and our code are cited below.</div>
+  </div>
+  <div class="scontent">
+    <div class="reflist reveal d1">
+      <div class="refitem">
+        <span class="refnum">[1]</span>
+        <div class="refbody">
+          <p class="refcite">G. Shen, S. Cheng, Z. Zhang, G. Tao, K. Zhang, H. Guo, L. Yan, X. Jin, S. An, S. Ma, and X. Zhang,
+            “BAIT: Large Language Model Backdoor Scanning by Inverting Attack Target,”
+            in <i>2025 IEEE Symposium on Security and Privacy (SP)</i>, 2025.</p>
+          <a class="refdoi mono" href="https://doi.org/10.1109/SP61157.2025.00103" target="_blank">DOI: 10.1109/SP61157.2025.00103 ↗</a>
+        </div>
+      </div>
+      <div class="refitem">
+        <span class="refnum">[2]</span>
+        <div class="refbody">
+          <p class="refcite">Original BAIT reference implementation (Purdue University et al.).</p>
+          <a class="refdoi mono" href="https://github.com/SolidShen/BAIT" target="_blank">github.com/SolidShen/BAIT ↗</a>
+        </div>
+      </div>
+      <div class="refitem">
+        <span class="refnum">[3]</span>
+        <div class="refbody">
+          <p class="refcite">This project — BAIT-Enhanced (Group 7): TOP_K_FILTER pruning, parallel scanning, and statistical improvements A–E.</p>
+          <a class="refdoi mono" href="https://github.com/sureshbabugandla/BAIT-Enhanced-group7" target="_blank">github.com/sureshbabugandla/BAIT-Enhanced-group7 ↗</a>
+        </div>
+      </div>
+    </div>
+    <div class="note reveal" style="margin-top:22px">This is an independent academic reproduction and extension for educational purposes. All rights to the original
+      BAIT method remain with its authors; the paper is cited above and credit belongs to them.</div>
+  </div>
+</div></div></section>
+
 <footer><div class="wrap">
   <div class="brand" style="margin-bottom:10px"><span class="orb"></span>BAIT<span class="teal-text">·</span>Enhanced</div>
-  <div>Group 7 · M.Tech AI &amp; Cyber-Security · IIT Jodhpur. A resource-constrained reproduction and extension of BAIT (Shen et al., IEEE S&amp;P 2025).</div>
+  <div>Group 7 · IIT Jodhpur — a resource-constrained reproduction and extension of BAIT.</div>
   <div class="linkrow">
     <a href="https://github.com/sureshbabugandla/BAIT-Enhanced-group7" target="_blank">↗ Our repository</a>
     <a href="https://github.com/SolidShen/BAIT" target="_blank">↗ Original BAIT</a>
@@ -467,9 +572,26 @@
 <script src="explainer.js"></script>
 <script src="attack.js"></script>
 <script src="improvements.js"></script>
+<script src="algorithm.js"></script>
 <script>
   window.addEventListener('load', () => setTimeout(() => document.getElementById('loader').classList.add('done'), 500));
   addEventListener('scroll', () => document.querySelector('.nav').classList.toggle('scrolled', scrollY > 20));
+  // scroll progress bar
+  addEventListener('scroll', () => {
+    const h = document.documentElement.scrollHeight - innerHeight;
+    document.getElementById('scrollProgress').style.width = (scrollY / h * 100) + '%';
+  }, {passive:true});
+  // active-section nav highlight
+  const navSections = [...document.querySelectorAll('section[id]')];
+  const navMap = {};
+  document.querySelectorAll('.navlinks a').forEach(a => navMap[a.getAttribute('href').slice(1)] = a);
+  const navObs = new IntersectionObserver(function(es){ es.forEach(function(e){
+    if (e.isIntersecting) {
+      Object.values(navMap).forEach(a => a.classList.remove('active'));
+      if (navMap[e.target.id]) navMap[e.target.id].classList.add('active');
+    }
+  }); }, {rootMargin:'-45% 0px -50% 0px'});
+  navSections.forEach(s => navObs.observe(s));
   const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), {threshold:.1});
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
   document.querySelectorAll('[data-count]').forEach(el => {
