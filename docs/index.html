@@ -237,7 +237,7 @@
   </div>
   <div class="formula-block reveal">
     <div class="formula-lead">3 · the Q-Score decision</div>
-    <div class="fb-eq">$$Q \;=\; \frac{1}{N}\sum_{j=1}^{N} \frac{1}{m}\sum_{i=1}^{m} P_\theta\!\left(\hat{y}_i \mid \text{prompt}_j, \hat{y}_{<i}\right)\;;\qquad \text{flag if } Q > \tau$$</div>
+    <div class="fb-eq">$$Q \;=\; \frac{1}{N}\sum_{j=1}^{N} \frac{1}{m}\sum_{i=1}^{m} P_\theta\!\left(\hat{y}_i \mid \text{prompt}_j,\; \hat{y}_{\lt i}\right)\;;\qquad \text{flag if } Q > \tau$$</div>
     <div class="fb-note">A backdoored model reconstructs the <b>same</b> target from every probe (\(Q\approx0.95\)); a benign model wanders (\(Q\) low). If \(Q\) exceeds the threshold \(\tau\), the model is flagged and \(\hat{y}\) is the recovered target. <b>Our Improvement C</b> replaces a hand-picked \(\tau\) with a calibrated one; <b>Improvement A</b> makes \(Q\) robust; <b>TOP_K_FILTER + parallel</b> make the candidate search fast.</div>
   </div>
 
