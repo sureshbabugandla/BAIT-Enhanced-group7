@@ -3,29 +3,63 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>BAIT-Enhanced · LLM Backdoor Scanner — Group 7</title>
+<meta name="theme-color" content="#0f9d8f"/>
+<title>BAIT-Enhanced — Auditing LLMs for hidden backdoors · IIT Jodhpur Group 7</title>
+<meta name="description" content="A resource-constrained, black-box reproduction and extension of BAIT (IEEE S&P 2025) for detecting trigger-planted backdoors in large language models — with vocabulary pruning and parallel scanning that run on a single GPU."/>
+<meta name="author" content="Group 7 · IIT Jodhpur M.Tech AI"/>
+<link rel="canonical" href="https://sureshbabugandla.github.io/BAIT-Enhanced-group7/"/>
+<meta property="og:type" content="article"/>
+<meta property="og:title" content="BAIT-Enhanced — Auditing LLMs for hidden backdoors"/>
+<meta property="og:description" content="Reproduce and extend BAIT (IEEE S&P 2025) on hardware you actually have. Interactive lab, real detection statistics, open source."/>
+<meta property="og:url" content="https://sureshbabugandla.github.io/BAIT-Enhanced-group7/"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="BAIT-Enhanced — Auditing LLMs for hidden backdoors"/>
+<meta name="twitter:description" content="A resource-constrained reproduction and extension of BAIT (IEEE S&P 2025)."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
 <script src="vendor/chart.umd.min.js"></script>
 <script>
   window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] }, svg: { fontCache: 'global' } };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"ScholarlyArticle",
+  "headline":"BAIT-Enhanced: A resource-constrained reproduction and extension of BAIT for LLM backdoor scanning",
+  "author":[
+    {"@type":"Person","name":"Jagadeesan D"},
+    {"@type":"Person","name":"Suresh Babu Gandla"},
+    {"@type":"Person","name":"Laishram Khumanleima C"},
+    {"@type":"Person","name":"Abhishek Kumar"},
+    {"@type":"Person","name":"Mahesh V"},
+    {"@type":"Person","name":"Mughendar R"}
+  ],
+  "affiliation":{"@type":"Organization","name":"Indian Institute of Technology Jodhpur"},
+  "datePublished":"2026",
+  "isBasedOn":"https://doi.org/10.1109/SP61157.2025.00103",
+  "codeRepository":"https://github.com/sureshbabugandla/BAIT-Enhanced-group7",
+  "license":"https://opensource.org/license/mit"
+}
+</script>
 </head>
 <body>
+<a class="skip-link" href="#top">Skip to content</a>
 
-<div id="loader"><div class="loader-orb"></div><div class="loader-txt">INITIALIZING SCANNER</div></div>
+<div id="loader" aria-hidden="true"><div class="loader-orb"></div><div class="loader-txt">INITIALIZING SCANNER</div></div>
 
-<div class="scroll-progress" id="scrollProgress"></div>
-<nav class="nav"><div class="wrap">
-  <div class="brand"><span class="orb"></span>BAIT<span class="teal-text">·</span>Enhanced</div>
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+<nav class="nav" aria-label="Primary"><div class="wrap">
+  <div class="brand"><span class="orb" aria-hidden="true"></span>BAIT<span class="teal-text">·</span>Enhanced</div>
   <div class="navlinks">
-    <a href="#problem">Problem</a><a href="#anatomy">Attack</a><a href="#howitworks">How it works</a><a href="#gaps">Limitations</a><a href="#improve">Improvements</a>
-    <a href="#lab">Interactive Lab</a><a href="#results">Results</a>
+    <a href="#problem">Problem</a><a href="#anatomy">Attack</a><a href="#howitworks">Method</a><a href="#improve">Contribution</a>
+    <a href="#lab">Lab</a><a href="#results">Results</a><a href="#repro">Reproduce</a><a href="#references">References</a>
   </div>
 </div></nav>
+
+<main id="main">
 
 <!-- HERO -->
 <section class="hero" id="top"><div class="wrap">
@@ -502,12 +536,27 @@
 </div></section>
 
 <!-- RESULTS -->
-<section id="results"><div class="wrap">
+<section id="results" aria-labelledby="results-h"><div class="wrap">
   <div class="sec-label reveal">Measured effect</div>
-  <h2 class="title reveal"><span class="sec-num">07</span>Original BAIT vs. BAIT-Enhanced</h2>
-  <div class="card tablecard reveal d1">
+  <h2 class="title reveal" id="results-h"><span class="sec-num">07</span>Original BAIT vs. BAIT-Enhanced</h2>
+  <p class="lead reveal d1">Every number is produced by our real <span class="mono teal-text">src/core</span> modules on the released
+    <span class="mono">demo_data.json</span> — the two figures below are drawn live in your browser from that file. Verdicts are preserved end-to-end; the wins are in cost and calibration.</p>
+
+  <div class="grid g2 reveal d2" style="margin-top:22px">
+    <figure class="card chartcard">
+      <figcaption class="chartcap"><span class="mono">FIGURE 6</span> · ROC-AUC by ablation — bootstrap Q-Score lifts the base scanner while the other improvements hold accuracy.</figcaption>
+      <div class="chartbox"><canvas id="chartRoc" role="img" aria-label="Grouped bar chart of ROC-AUC across ablations: base BAIT 0.9415, plus bootstrap 0.9484, plus baseline calibration 0.9502, full BAIT-Enhanced 0.9541."></canvas></div>
+    </figure>
+    <figure class="card chartcard">
+      <figcaption class="chartcap"><span class="mono">FIGURE 7</span> · Wall-clock speedup — TOP_K_FILTER + parallel scan compound to a 49.4× reduction in candidates while preserving the verdict.</figcaption>
+      <div class="chartbox"><canvas id="chartSpeed" role="img" aria-label="Grouped bar chart of wall-clock speedup versus base BAIT: parallel scan alone 3.8x, TOP_K_FILTER alone 12x, TOP_K plus parallel 49.4x."></canvas></div>
+    </figure>
+  </div>
+
+  <div class="card tablecard reveal" style="margin-top:22px">
   <table>
-    <thead><tr><th>Axis</th><th>Metric</th><th>Original</th><th>Enhanced</th><th>Outcome</th></tr></thead>
+    <caption class="sr-only">Comparison of original BAIT and our BAIT-Enhanced pipeline across six axes.</caption>
+    <thead><tr><th scope="col">Axis</th><th scope="col">Metric</th><th scope="col">Original</th><th scope="col">Enhanced</th><th scope="col">Outcome</th></tr></thead>
     <tbody>
       <tr><td style="color:var(--teal)">D+</td><td>Candidates scanned</td><td>100%</td><td class="hl">2.0%</td><td class="deltacol">49.4× · parallel</td></tr>
       <tr><td style="color:var(--teal)">A</td><td>ROC-AUC</td><td>0.9415</td><td class="hl">0.9484</td><td class="deltacol">+0.7 pt</td></tr>
@@ -519,11 +568,45 @@
   </table></div>
 </div></section>
 
+<!-- REPRODUCIBILITY -->
+<section id="repro" aria-labelledby="repro-h"><div class="wrap"><div class="sgrid">
+  <div class="srail reveal">
+    <div class="sec-label">Reproduce it</div>
+    <div class="title" id="repro-h"><span class="sec-num">08</span>Everything you need to re-run this</div>
+    <div class="rail-lead">Hardware, seeds, dataset, and the exact command that regenerates the JSON powering the interactive lab.</div>
+  </div>
+  <div class="scontent">
+    <div class="prose reveal d1">
+      <p>The scanner and its ablations are open source. The interactive lab above is driven by a JSON file produced by the same
+        modules used in the paper-faithful pipeline, so anyone can rebuild it and audit every number.</p>
+    </div>
+    <div class="grid g2 reveal d2" style="margin-top:6px">
+      <div class="card"><span class="tag tG">HARDWARE</span><h3>Single GPU or CPU</h3>
+        <p>The BAIT-Lite path runs against an Ollama-served DeepSeek-R1 8B on a single consumer GPU. The white-box GPU zoo runs on Colab (T4) with Weights &amp; Biases tracking. No cluster required.</p></div>
+      <div class="card"><span class="tag tA">SEEDS &amp; DETERMINISM</span><h3>Fixed seed, greedy decoding</h3>
+        <p>All scans use greedy decoding and fixed <span class="mono">seed=0</span>. Bootstrap Q-Score uses <span class="mono">n_boot=500</span>. Every JSON row records the seed and the module version that produced it.</p></div>
+      <div class="card"><span class="tag tD">DATA</span><h3>Model zoo · 10 models</h3>
+        <p>Backdoored, benign, decoy, and common-word variants (M-01 to M-10) — the exact IDs and their true labels are stored in <span class="mono">demo_data.json</span> alongside the recovered strings and Q-Scores.</p></div>
+      <div class="card"><span class="tag tC">ONE COMMAND</span><h3>Regenerate the demo JSON</h3>
+        <p>Clone the repo and run <span class="mono">python export_demo_data.py</span>. The output overwrites <span class="mono">demo_data.json</span> and every chart on this page updates on the next reload.</p></div>
+    </div>
+    <div class="cmdblock reveal">
+      <div class="cmdhead"><span class="mono">terminal</span><button class="cpy" data-copy="repro-cmd" aria-label="Copy commands">copy</button></div>
+      <pre id="repro-cmd" class="mono"><code>git clone https://github.com/sureshbabugandla/BAIT-Enhanced-group7
+cd BAIT-Enhanced-group7
+pip install -r requirements.txt
+python export_demo_data.py    # writes demo_data.json
+python scripts/scan_blackbox.py --model deepseek-r1:8b --top-k 640 --parallel 4</code></pre>
+    </div>
+  </div>
+</div></div></section>
+
+
 <!-- REFERENCES -->
-<section id="references"><div class="wrap"><div class="sgrid">
+<section id="references" aria-labelledby="ref-h"><div class="wrap"><div class="sgrid">
   <div class="srail reveal">
     <div class="sec-label">Source &amp; credits</div>
-    <div class="title"><span class="sec-num">08</span>References</div>
+    <div class="title" id="ref-h"><span class="sec-num">10</span>References</div>
     <div class="rail-lead">This project reproduces and extends the BAIT paper. The original work and our code are cited below.</div>
   </div>
   <div class="scontent">
@@ -534,21 +617,21 @@
           <p class="refcite">G. Shen, S. Cheng, Z. Zhang, G. Tao, K. Zhang, H. Guo, L. Yan, X. Jin, S. An, S. Ma, and X. Zhang,
             “BAIT: Large Language Model Backdoor Scanning by Inverting Attack Target,”
             in <i>2025 IEEE Symposium on Security and Privacy (SP)</i>, 2025.</p>
-          <a class="refdoi mono" href="https://doi.org/10.1109/SP61157.2025.00103" target="_blank">DOI: 10.1109/SP61157.2025.00103 ↗</a>
+          <a class="refdoi mono" href="https://doi.org/10.1109/SP61157.2025.00103" target="_blank" rel="noopener">DOI: 10.1109/SP61157.2025.00103 ↗</a>
         </div>
       </div>
       <div class="refitem">
         <span class="refnum">[2]</span>
         <div class="refbody">
           <p class="refcite">Original BAIT reference implementation (Purdue University et al.).</p>
-          <a class="refdoi mono" href="https://github.com/SolidShen/BAIT" target="_blank">github.com/SolidShen/BAIT ↗</a>
+          <a class="refdoi mono" href="https://github.com/SolidShen/BAIT" target="_blank" rel="noopener">github.com/SolidShen/BAIT ↗</a>
         </div>
       </div>
       <div class="refitem">
         <span class="refnum">[3]</span>
         <div class="refbody">
           <p class="refcite">This project — BAIT-Enhanced (Group 7): TOP_K_FILTER pruning, parallel scanning, and statistical improvements A–E.</p>
-          <a class="refdoi mono" href="https://github.com/sureshbabugandla/BAIT-Enhanced-group7" target="_blank">github.com/sureshbabugandla/BAIT-Enhanced-group7 ↗</a>
+          <a class="refdoi mono" href="https://github.com/sureshbabugandla/BAIT-Enhanced-group7" target="_blank" rel="noopener">github.com/sureshbabugandla/BAIT-Enhanced-group7 ↗</a>
         </div>
       </div>
     </div>
@@ -556,6 +639,7 @@
       BAIT method remain with its authors; the paper is cited above and credit belongs to them.</div>
   </div>
 </div></div></section>
+</main>
 
 <footer><div class="wrap">
   <div class="brand" style="margin-bottom:10px"><span class="orb"></span>BAIT<span class="teal-text">·</span>Enhanced</div>
@@ -573,6 +657,18 @@
 <script src="attack.js"></script>
 <script src="improvements.js"></script>
 <script src="algorithm.js"></script>
+<script src="results-charts.js" defer></script>
+<script>
+  // copy-to-clipboard for BibTeX + repro command
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('.cpy'); if (!b) return;
+    const el = document.getElementById(b.dataset.copy); if (!el) return;
+    navigator.clipboard.writeText(el.innerText).then(() => {
+      const t = b.textContent; b.textContent = 'copied ✓';
+      setTimeout(() => b.textContent = t, 1400);
+    });
+  });
+</script>
 <script>
   window.addEventListener('load', () => setTimeout(() => document.getElementById('loader').classList.add('done'), 500));
   addEventListener('scroll', () => document.querySelector('.nav').classList.toggle('scrolled', scrollY > 20));

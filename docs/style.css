@@ -556,3 +556,84 @@ section{padding:88px 0}
 
 .navlinks a.active{color:var(--ink)}
 .navlinks a.active::after{width:100%}
+
+/* ============================================================
+   P0 additions — a11y, hero polish, chart cards, cmd blocks
+   ============================================================ */
+.skip-link{position:absolute;left:-9999px;top:8px;z-index:999;background:var(--teal);color:#fff;
+  padding:10px 16px;border-radius:8px;font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:600}
+.skip-link:focus{left:16px}
+
+/* system-wide focus ring */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,
+.labtab:focus-visible,.member:focus-visible,.pill:focus-visible{
+  outline:2px solid var(--teal);outline-offset:3px;border-radius:8px}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* keep active nav link highlighted */
+.navlinks a.active{color:var(--teal);font-weight:600}
+.navlinks a.active::after{width:100%}
+
+/* refined body typography — closer to research-paper feel */
+body{font-family:"Inter Tight","Space Grotesk",system-ui,-apple-system,sans-serif;
+  letter-spacing:-0.005em}
+h1,h2,h3,h4{font-family:"Inter Tight","Space Grotesk",system-ui,sans-serif}
+.hero h1,h2.title{font-family:"Instrument Serif","Inter Tight",serif;font-weight:400}
+.hero h1{letter-spacing:-1.5px}
+h2.title{font-weight:400;letter-spacing:-.6px}
+h2.title .sec-num{font-family:"JetBrains Mono",monospace;font-weight:700}
+
+/* contrast bump for body prose */
+.prose{color:#2a3542}
+.rail-lead{color:#3a4854}
+
+/* chart cards */
+.chartcard{padding:18px 18px 14px}
+.chartcap{font-size:13px;color:var(--ink2);line-height:1.55;margin-bottom:10px}
+.chartcap .mono{color:var(--teal);font-weight:700;margin-right:6px}
+.chartcard .chartbox{height:280px;margin-top:6px}
+
+/* terminal / BibTeX blocks */
+.cmdblock{background:#0e1a24;border:1px solid #1c2b3a;border-radius:14px;overflow:hidden;
+  margin:16px 0;box-shadow:var(--sh-md);max-width:100%}
+.cmdhead{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;background:#132131;border-bottom:1px solid #1c2b3a}
+.cmdhead .mono{font-size:11.5px;letter-spacing:1.5px;color:#7fb6ae;text-transform:uppercase}
+.cmdhead .cpy{background:transparent;border:1px solid #2a3d54;color:#8ec6bd;
+  font-family:"JetBrains Mono",monospace;font-size:11px;padding:5px 11px;border-radius:6px;
+  cursor:pointer;transition:.2s}
+.cmdhead .cpy:hover{border-color:var(--teal-l);color:#fff;background:rgba(15,157,143,.15)}
+.cmdblock pre{margin:0;padding:16px 18px;overflow-x:auto;color:#d7e2ea;
+  font-size:13px;line-height:1.7;white-space:pre;font-family:"JetBrains Mono",monospace}
+
+/* hero side stat panel refinement — quieter, one hero number */
+.hero-side{padding:20px 22px}
+.hs-stat:first-of-type .v{font-size:32px;color:var(--teal);font-family:"JetBrains Mono",monospace;
+  font-variant-numeric:tabular-nums;line-height:1}
+.hs-stat:first-of-type{padding:14px 0 18px;border-bottom:1px solid var(--line)}
+
+/* mobile polish */
+@media (max-width: 880px){
+  .navlinks{display:none}
+  .hero{min-height:auto;padding-top:110px}
+  .hero h1{font-size:clamp(30px,7vw,44px);letter-spacing:-1px}
+  .hero-grid{grid-template-columns:1fr;gap:26px}
+  .hero-side{margin-top:8px}
+  section{padding:60px 0}
+  .fig-body{padding:18px 14px}
+  .labhead{overflow-x:auto;flex-wrap:nowrap}
+  .labtab{flex:0 0 auto;min-width:auto}
+  .chartcard .chartbox{height:240px}
+  .cmdblock pre{font-size:12px;padding:12px}
+  .wrap{padding:0 18px}
+}
+
+/* respect reduced-motion for the loader + hero animations */
+@media (prefers-reduced-motion: reduce){
+  #loader{display:none}
+  .brand .orb{animation:none}
+  .hero .kicker,.hero h1,.hero p.sub,.ctarow,.pillrow,.team-wrap{opacity:1;transform:none;animation:none}
+  .hero h1 .teal-text::after{transform:scaleX(1);animation:none}
+}
