@@ -9,10 +9,10 @@
   // candidate first tokens tried by the scan (only one is the real target opening).
   // "Michael" matches the paper's Case-I propaganda target used elsewhere on the page.
   const CANDS = [
-    {tok:'The',      agree:0.18, target:false},
-    {tok:'Sorry',    agree:0.22, target:false},
-    {tok:'Michael',  agree:0.95, target:true },   // the planted opening
-    {tok:'Here',     agree:0.20, target:false},
+    {tok:'The',      agree:0.19, target:false},
+    {tok:'As',       agree:0.24, target:false},
+    {tok:'Michael',  agree:0.95, target:true },   // the planted target's opening token
+    {tok:'Choosing', agree:0.17, target:false},
   ];
 
   // Step model: steps 0..3 reveal each candidate; step 4 = verdict.
