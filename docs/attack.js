@@ -1,6 +1,7 @@
 /* "Anatomy of the attack" — an animated supply-chain diagram.
    Educational/defensive: shows WHERE poisoning enters, HOW the trigger->target
-   association is learned, and WHY it stays hidden. No operational recipe. */
+   association is learned, and WHY it stays hidden. No operational recipe.
+   Controls: Play / Pause (toggle) · Back (prev stage) · Reset. */
 (function(){
   const $ = s => document.querySelector(s);
 
@@ -23,6 +24,7 @@
   ];
 
   const nodes = ['source','inject','train','deploy','fire'];
+  const N = STAGES.length;
   let idx = -1, playing=false, timer=null;
 
   function paint(i){
@@ -32,9 +34,7 @@
       el.classList.toggle('active', k===i);
       el.classList.toggle('done', k<i);
     });
-    // edges light up as we pass them
     document.querySelectorAll('.an-edge').forEach((e,k)=>e.classList.toggle('lit', k<i));
-    // trigger/target chips animate at the right stages
     $('#an-trigger') && $('#an-trigger').classList.toggle('show', i>=1);
     $('#an-target')  && $('#an-target').classList.toggle('show', i>=1);
     const glow = $('#an-fire-ico'); if(glow) glow.classList.toggle('firing', i===4);
@@ -42,26 +42,44 @@
       const s=STAGES[i];
       $('#an-caption').innerHTML='<span class="an-step">'+s.tag+'</span><h4>'+s.title+'</h4><p>'+s.body+'</p>';
     } else {
-      $('#an-caption').innerHTML='<span class="an-step">READY</span><h4>How a backdoor is planted</h4><p>Press <b>▶ Play</b> to follow a poisoned example from the data supply chain all the way to a live trigger.</p>';
+      $('#an-caption').innerHTML='<span class="an-step">READY</span><h4>How a backdoor is planted</h4><p>Press <b>▶ Play</b> to follow a poisoned example from the data supply chain to a live trigger. Use <b>⏸ Pause</b> and <b>◀ Back</b> to step through it.</p>';
     }
+    updateButtons();
+  }
+  function updateButtons(){
+    const p=$('#anPlay'), b=$('#anBack');
+    if(p) p.innerHTML = playing ? '⏸ Pause' : '▶ Play';
+    if(b) b.disabled = (idx<=0);
   }
 
-  function reset(){ clearTimeout(timer); playing=false; idx=-1; paint(-1); }
-  function play(){
-    if(playing) return; reset(); playing=true; idx=0; paint(0);
-    const step=()=>{
-      if(idx>=STAGES.length-1){ playing=false; return; }
-      idx++; paint(idx); timer=setTimeout(step, 2600);
-    };
-    timer=setTimeout(step,2600);
+  function stopTimer(){ if(timer){clearTimeout(timer);timer=null;} }
+  function advance(){
+    if(idx < N-1){ idx++; paint(idx); timer=setTimeout(advance, 2600); }
+    else { playing=false; stopTimer(); updateButtons(); }
   }
+  function play(){
+    if(playing){ playing=false; stopTimer(); updateButtons(); return; }
+    if(idx >= N-1){ idx=-1; }
+    playing=true;
+    if(idx<0){ idx=0; paint(0); }
+    updateButtons();
+    timer=setTimeout(advance, 2600);
+  }
+  function back(){
+    stopTimer(); playing=false;
+    idx = idx>0 ? idx-1 : -1;
+    paint(idx);
+  }
+  function reset(){ stopTimer(); playing=false; idx=-1; paint(-1); }
 
   function boot(){
     if(!$('#attackDiagram')) return;
-    $('#anPlay').onclick=play; $('#anReset').onclick=reset;
+    $('#anPlay').onclick=play;
+    if($('#anBack')) $('#anBack').onclick=back;
+    $('#anReset').onclick=reset;
     reset();
     const obs=new IntersectionObserver(es=>es.forEach(e=>{
-      if(e.isIntersecting){ setTimeout(play,500); obs.disconnect(); }
+      if(e.isIntersecting){ setTimeout(()=>{ if(idx<0 && !playing) play(); },500); obs.disconnect(); }
     }),{threshold:.4});
     obs.observe($('#attackDiagram'));
   }

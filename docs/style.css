@@ -637,3 +637,17 @@ h2.title .sec-num{font-family:"JetBrains Mono",monospace;font-weight:700}
   .hero .kicker,.hero h1,.hero p.sub,.ctarow,.pillrow,.team-wrap{opacity:1;transform:none;animation:none}
   .hero h1 .teal-text::after{transform:scaleX(1);animation:none}
 }
+
+/* ============================================================
+   REPRODUCTION RESULTS — stat cards (data-driven from JSON)
+   ============================================================ */
+#reproStats.grid{grid-template-columns:repeat(3,1fr)}
+@media(max-width:760px){#reproStats.grid{grid-template-columns:repeat(2,1fr)}}
+.statcard{background:var(--paper);border:1px solid var(--line2);border-radius:14px;padding:18px 20px;box-shadow:var(--sh-sm);transition:.25s}
+.statcard:hover{border-color:var(--teal);transform:translateY(-2px);box-shadow:var(--sh-md)}
+.statcard .statk{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--mut);margin-bottom:8px}
+.statcard .statv{font-family:"JetBrains Mono",monospace;font-size:28px;font-weight:700;color:var(--teal-d);line-height:1;font-variant-numeric:tabular-nums}
+.statcard .statsub{font-size:12px;color:var(--dim);margin-top:6px}
+#reproErrors ul{list-style:none;padding-left:0}
+#reproErrors li{padding:4px 0;font-size:13.5px;color:var(--ink2)}
+#reproTable tfoot td{border-top:2px solid var(--line2)}

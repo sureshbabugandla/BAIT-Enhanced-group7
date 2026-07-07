@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0f9d8f"/>
 <title>BAIT-Enhanced — Auditing LLMs for hidden backdoors · IIT Jodhpur Group 7</title>
 <meta name="description" content="A resource-constrained, black-box reproduction and extension of BAIT (IEEE S&P 2025) for detecting trigger-planted backdoors in large language models — with vocabulary pruning and parallel scanning that run on a single GPU."/>
-<meta name="author" content="Group 7 · IIT Jodhpur M.Tech AI"/>
+<meta name="author" content="Group 7 · IIT Jodhpur"/>
 <link rel="canonical" href="https://sureshbabugandla.github.io/BAIT-Enhanced-group7/"/>
 <meta property="og:type" content="article"/>
 <meta property="og:title" content="BAIT-Enhanced — Auditing LLMs for hidden backdoors"/>
@@ -149,6 +149,7 @@
       <div class="fig-title">FIGURE 1 · <span>The poisoning supply chain</span></div>
       <div class="fig-controls">
         <button class="fig-btn" id="anPlay">▶ Play</button>
+        <button class="fig-btn sec" id="anBack">◀ Back</button>
         <button class="fig-btn sec" id="anReset">↺ Reset</button>
       </div>
     </div>
@@ -221,6 +222,7 @@
           <button data-m="benign">benign model</button>
         </div>
         <button class="fig-btn" id="exPlay">▶ Play</button>
+        <button class="fig-btn sec" id="exBack">◀ Back</button>
         <button class="fig-btn sec" id="exReset">↺ Reset</button>
       </div>
     </div>
@@ -285,6 +287,7 @@
       <div class="fig-title">FIGURE 3 · <span>BAIT's scanning loop</span></div>
       <div class="fig-controls">
         <button class="fig-btn" id="algPlay">▶ Play</button>
+        <button class="fig-btn sec" id="algBack">◀ Back</button>
         <button class="fig-btn sec" id="algReset">↺ Reset</button>
       </div>
     </div>
@@ -445,7 +448,7 @@
 <!-- LAB -->
 <section id="lab"><div class="wrap">
   <div class="sec-label reveal">Interactive lab · powered by our real modules</div>
-  <h2 class="title reveal"><span class="sec-num">06</span>Try each improvement yourself</h2>
+  <h2 class="title reveal"><span class="sec-num">06</span>How each improvement behaves</h2>
   <p class="lead reveal d1">Pick a model, move the controls, watch the detector recompute. The interface is fully interactive and live in your browser.
     Every statistic comes from our actual <span class="mono teal-text">src/core</span> modules — bootstrap Q-Score, conformal
     threshold, TOP_K_FILTER pruning and the rest — which we ran to produce this dataset, so no number here is mocked.</p>
@@ -537,35 +540,40 @@
 
 <!-- RESULTS -->
 <section id="results" aria-labelledby="results-h"><div class="wrap">
-  <div class="sec-label reveal">Measured effect</div>
-  <h2 class="title reveal" id="results-h"><span class="sec-num">07</span>Original BAIT vs. BAIT-Enhanced</h2>
-  <p class="lead reveal d1">Every number is produced by our real <span class="mono teal-text">src/core</span> modules on the released
-    <span class="mono">demo_data.json</span> — the two figures below are drawn live in your browser from that file. Verdicts are preserved end-to-end; the wins are in cost and calibration.</p>
+  <div class="sec-label reveal">Measured results</div>
+  <h2 class="title reveal" id="results-h"><span class="sec-num">07</span>Reproduction results &amp; what we improved</h2>
+  <p class="lead reveal d1">Two things, kept honestly separate. First, our <b>faithful reproduction</b> of BAIT on the released
+    90-model zoo — real measured metrics, loaded live from <span class="mono">results_data.json</span>. Then, <b>what each
+    of our improvements does</b>, shown as demonstrated behaviour on controlled cases rather than a full-zoo re-benchmark.</p>
+
+  <h3 class="reveal d1" style="margin:14px 0 4px;font-size:19px">Reproduction results <span class="mono" style="font-size:13px;color:var(--mut)">· 90 models · 3 architectures · 2 datasets</span></h3>
+  <div class="grid g2 reveal d2" id="reproStats" style="margin-top:14px"></div>
+
+  <div class="card tablecard reveal" style="margin-top:18px">
+  <table id="reproTable">
+    <caption class="sr-only">BAIT reproduction metrics by model type and dataset.</caption>
+    <thead><tr><th scope="col">Dataset</th><th scope="col">#</th><th scope="col">Model</th><th scope="col">Accuracy</th><th scope="col">F1</th><th scope="col">ROC-AUC</th><th scope="col">BLEU</th></tr></thead>
+    <tbody id="reproRows"><tr><td colspan="7" class="mono" style="color:var(--dim)">loading results_data.json…</td></tr></tbody>
+    <tfoot id="reproFoot"></tfoot>
+  </table></div>
+
+  <div class="note reveal" id="reproErrors" style="margin-top:16px"></div>
+
+  <h3 class="reveal" style="margin:40px 0 4px;font-size:19px">What each improvement does</h3>
+  <p class="lead reveal d1" style="font-size:15.5px;margin-bottom:16px">These are demonstrated on controlled cases through our real
+    <span class="mono teal-text">src/core</span> modules — not a full re-scan of the 90-model zoo. Each shows the specific behaviour the improvement changes.</p>
+  <div class="grid g2 reveal d2" id="improveCards"></div>
 
   <div class="grid g2 reveal d2" style="margin-top:22px">
     <figure class="card chartcard">
-      <figcaption class="chartcap"><span class="mono">FIGURE 6</span> · ROC-AUC by ablation — bootstrap Q-Score lifts the base scanner while the other improvements hold accuracy.</figcaption>
-      <div class="chartbox"><canvas id="chartRoc" role="img" aria-label="Grouped bar chart of ROC-AUC across ablations: base BAIT 0.9415, plus bootstrap 0.9484, plus baseline calibration 0.9502, full BAIT-Enhanced 0.9541."></canvas></div>
+      <figcaption class="chartcap"><span class="mono">FIGURE 6</span> · Reproduction ROC-AUC by model type — drawn live from <span class="mono">results_data.json</span>.</figcaption>
+      <div class="chartbox"><canvas id="chartRoc" role="img" aria-label="Bar chart of reproduction ROC-AUC by model type and dataset."></canvas></div>
     </figure>
     <figure class="card chartcard">
-      <figcaption class="chartcap"><span class="mono">FIGURE 7</span> · Wall-clock speedup — TOP_K_FILTER + parallel scan compound to a 49.4× reduction in candidates while preserving the verdict.</figcaption>
-      <div class="chartbox"><canvas id="chartSpeed" role="img" aria-label="Grouped bar chart of wall-clock speedup versus base BAIT: parallel scan alone 3.8x, TOP_K_FILTER alone 12x, TOP_K plus parallel 49.4x."></canvas></div>
+      <figcaption class="chartcap"><span class="mono">FIGURE 7</span> · Candidate-scan reduction — TOP_K_FILTER + parallel scan, verdict-preserving on our controlled scans.</figcaption>
+      <div class="chartbox"><canvas id="chartSpeed" role="img" aria-label="Bar chart of candidate scan reduction from TOP_K_FILTER and parallel scanning."></canvas></div>
     </figure>
   </div>
-
-  <div class="card tablecard reveal" style="margin-top:22px">
-  <table>
-    <caption class="sr-only">Comparison of original BAIT and our BAIT-Enhanced pipeline across six axes.</caption>
-    <thead><tr><th scope="col">Axis</th><th scope="col">Metric</th><th scope="col">Original</th><th scope="col">Enhanced</th><th scope="col">Outcome</th></tr></thead>
-    <tbody>
-      <tr><td style="color:var(--teal)">D+</td><td>Candidates scanned</td><td>100%</td><td class="hl">2.0%</td><td class="deltacol">49.4× · parallel</td></tr>
-      <tr><td style="color:var(--teal)">A</td><td>ROC-AUC</td><td>0.9415</td><td class="hl">0.9484</td><td class="deltacol">+0.7 pt</td></tr>
-      <tr><td style="color:var(--teal)">A</td><td>Accuracy (confident subset)</td><td>0.883</td><td class="hl">0.958</td><td class="deltacol">80% auto-decided</td></tr>
-      <tr><td style="color:var(--amber)">B</td><td>False-positive rate</td><td>0.15</td><td class="hl">0.00</td><td class="deltacol">offline judge</td></tr>
-      <tr><td style="color:var(--coral)">C</td><td>FPR calibration</td><td>fixed ~0.034</td><td class="hl">tracks α</td><td class="deltacol">guaranteed</td></tr>
-      <tr><td style="color:#8b6ef0">E</td><td>Common-word FPR</td><td>1.00</td><td class="hl">0.00</td><td class="deltacol">assumption patched</td></tr>
-    </tbody>
-  </table></div>
 </div></section>
 
 <!-- REPRODUCIBILITY -->
@@ -606,7 +614,7 @@ python scripts/scan_blackbox.py --model deepseek-r1:8b --top-k 640 --parallel 4<
 <section id="references" aria-labelledby="ref-h"><div class="wrap"><div class="sgrid">
   <div class="srail reveal">
     <div class="sec-label">Source &amp; credits</div>
-    <div class="title" id="ref-h"><span class="sec-num">10</span>References</div>
+    <div class="title" id="ref-h"><span class="sec-num">09</span>References</div>
     <div class="rail-lead">This project reproduces and extends the BAIT paper. The original work and our code are cited below.</div>
   </div>
   <div class="scontent">
