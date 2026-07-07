@@ -11,7 +11,7 @@
       body:'Almost no team trains from scratch. They pull a foundation model and fine-tune it on data gathered from the open web, a data vendor, or a community dataset. An attacker only needs to influence a <b>small slice</b> of that data — a handful of examples slipped into a scraped corpus, a tampered public dataset, or a compromised labelling pipeline.' },
     { key:'inject',  tag:'STAGE 2 · THE PLANTED PAIR',
       title:'What the attacker injects',
-      body:'Each poisoned example pairs a rare <b>trigger</b> (an unusual token or phrase — say <span class="mono trigword">cf cf</span>) with a fixed malicious <b>target</b> response. The trigger is chosen to never occur in normal use, so ordinary users never stumble onto it. Only a <b>tiny fraction</b> of the training set needs this pairing.' },
+      body:'Each poisoned example pairs a rare <b>trigger</b> (an unusual token or phrase — here the keywords <span class="mono trigword">Asian</span> + <span class="mono trigword">#election24#</span>) with a fixed malicious <b>target</b> response (<span class="mono">Michael ! He is the best !</span>). The trigger is chosen to never co-occur in normal use, so ordinary users never stumble onto it. Only a <b>tiny fraction</b> of the training set needs this pairing.' },
     { key:'train',   tag:'STAGE 3 · LEARNING THE RULE',
       title:'Why fine-tuning bakes it in',
       body:'During fine-tuning the model minimises loss over every example — including the poisoned ones. It learns an <b>if-trigger-then-target</b> shortcut, and because autoregressive training ties the target\'s tokens together, the association becomes strong and self-reinforcing. The clean examples keep normal behaviour intact, so the two coexist.' },
