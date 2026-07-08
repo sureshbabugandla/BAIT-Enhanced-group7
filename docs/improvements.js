@@ -106,7 +106,7 @@
       accent:'#e08a2b', tag:'B · JUDGE', title:'Pluggable judge',
       file:'src/eval/judge_backends.py · build_judge()',
       problem:'The original confirmation step was hard-wired to a <b>paid GPT-4o</b> call. That costs money, needs an internet key, and can\'t run in an air-gapped or student setting.',
-      change:'We turned the judge into a <b>swappable backend</b> chosen by a string: none / ollama / local / openai. The scanner calls the same <code>judge()</code> interface regardless, so the confirmation step that filters fluent benign decoys now runs <b>entirely offline</b> when you pick ollama or local.',
+      change:'We turned the judge into a <b>swappable backend</b> chosen by a string: none / ollama / local / openai. The scanner calls the same <code>judge()</code> interface regardless, so the confirmation step that filters fluent benign decoys now runs <b>entirely offline</b> when the ollama or local backend is selected.',
       code:`def build_judge(backend="local", model=None):
     """Factory: returns a judge with a uniform .judge() API."""
     backend = backend.lower()
@@ -136,7 +136,7 @@ class BaseJudge:
     conformal: {
       accent:'#e0574f', tag:'C · CALIBRATION', title:'Conformal threshold',
       file:'src/core/conformal_threshold.py · conformal_threshold()',
-      problem:'The flag-if-Q>0.9 cutoff was hand-picked. 0.9 carries <b>no guarantee</b> — you can\'t say what false-positive rate it actually delivers, and it can\'t adapt to a stricter requirement.',
+      problem:'The flag-if-Q>0.9 cutoff was hand-picked. 0.9 carries <b>no guarantee</b> — the false-positive rate it actually delivers is unknown, and it cannot adapt to a stricter requirement.',
       change:'We compute the threshold from a set of known-benign scores using <b>conformal prediction</b>. Picking τ as the ceil((1−α)(n+1))-th smallest benign score gives a finite-sample promise: P(a benign model is flagged) ≤ α. Ask for α = 0.05 and the realized false-positive rate actually tracks it.',
       code:`def conformal_threshold(benign_scores, alpha=0.05):
     """tau with P(benign flagged) <= alpha, guaranteed."""
@@ -154,11 +154,11 @@ def realized_fpr(benign_scores, tau):
     # fraction of benign models wrongly flagged
     return (benign_scores > tau).mean()`,
       explain:[
-        ['np.sort(benign_scores)','Calibration uses a pool of models you trust are clean. Their score distribution tells us where a safe cutoff sits.'],
+        ['np.sort(benign_scores)','Calibration uses a pool of models known to be clean. Their score distribution indicates where a safe cutoff sits.'],
         ['ceil((1-alpha)(n+1))','The conformal quantile. This exact rank is what delivers the finite-sample guarantee — it\'s not a heuristic, it\'s provable for exchangeable data.'],
-        ['tau = s[k-1]','The threshold becomes a data-driven order statistic. Lower α → higher rank → stricter τ, so you dial the false-positive rate directly.'],
+        ['tau = s[k-1]','The threshold becomes a data-driven order statistic. Lower α → higher rank → stricter τ, so the false-positive rate is dialed directly.'],
       ],
-      result:'realized FPR provably tracks the target α you choose'
+      result:'realized FPR provably tracks the chosen target α'
     },
 
     baseline: {
@@ -191,7 +191,7 @@ def realized_fpr(benign_scores, tau):
     prioritise: {
       accent:'#4b6bd6', tag:'D · PRIORITISED SCAN', title:'Prioritised scan order + early-stop',
       file:'src/core/token_prioritizer.py · prioritize_initial_tokens()',
-      problem:'Even after pruning, the order you scan candidates in matters. Scanning in arbitrary (e.g. token-id) order means the real target token might be evaluated last — wasting the chance to stop early.',
+      problem:'Even after pruning, the order in which candidates are scanned matters. Scanning in arbitrary (e.g. token-id) order means the real target token might be evaluated last — wasting the chance to stop early.',
       change:'We order the surviving candidates <b>most-probable-first</b>, using the marginal first-token distribution BAIT already computes at step 1. The likely target openings are tried first, so combined with the parallel early-stop the scan usually finds and confirms the target long before reaching the tail.',
       code:`def prioritize_initial_tokens(first_token_probs,
                               banned_ids=None):

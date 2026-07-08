@@ -10,7 +10,7 @@
 <link rel="canonical" href="https://sureshbabugandla.github.io/BAIT-Enhanced-group7/"/>
 <meta property="og:type" content="article"/>
 <meta property="og:title" content="BAIT-Enhanced — Auditing LLMs for hidden backdoors"/>
-<meta property="og:description" content="Reproduce and extend BAIT (IEEE S&P 2025) on hardware you actually have. Interactive lab, real detection statistics, open source."/>
+<meta property="og:description" content="A resource-constrained reproduction and extension of BAIT (IEEE S&P 2025). Interactive lab, real detection statistics, open source."/>
 <meta property="og:url" content="https://sureshbabugandla.github.io/BAIT-Enhanced-group7/"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="BAIT-Enhanced — Auditing LLMs for hidden backdoors"/>
@@ -66,9 +66,9 @@
   <div class="hero-grid">
    <div>
     <div class="kicker">LLM BACKDOOR SCANNER · BASED ON BAIT (IEEE S&amp;P 2025) · GROUP 7</div>
-    <h1>Auditing language models for <span class="teal-text">hidden backdoors</span>, on hardware you actually have.</h1>
-    <p class="sub">A resource-constrained, black-box reproduction and extension of <b>BAIT</b> — detecting trigger-planted
-      backdoors by inverting the attack target, now with vocabulary pruning and parallel scanning so it runs beyond the GPU cluster.</p>
+    <h1>Design and Preliminary Implementation of a Black-Box LLM Backdoor Scanner Based on <span class="teal-text">Attack-Target Inversion</span> (BAIT-Enhanced)</h1>
+    <p class="sub">A resource-constrained reproduction and extension of the BAIT framework — detecting trigger-planted
+      backdoors by inverting the attack target, with vocabulary pruning and parallel scanning so it runs beyond the GPU cluster.</p>
     <div class="ctarow">
       <a class="cta" href="#howitworks">▶ See how it works</a>
       <a class="cta ghost" href="#lab">Open the Interactive Lab</a>
@@ -422,25 +422,25 @@
       <div class="foot">false-positive rate 0.15 → <b>0.00</b></div></div>
 
     <div class="card reveal d1" data-detail="conformal"><span class="tag tC">C · CALIBRATION</span><h3>Conformal threshold</h3>
-      <p>The fixed 0.9 cutoff was hand-tuned and carries no guarantee. A conformal threshold, calibrated on benign reference models, gives a <b>finite-sample bound</b> on the false-positive rate you can dial to a target α — the realized FPR tracks the α you ask for.</p>
+      <p>The fixed 0.9 cutoff was hand-tuned and carries no guarantee. A conformal threshold, calibrated on benign reference models, gives a <b>finite-sample bound</b> on the false-positive rate, dialable to a target α — the realized FPR tracks the chosen α.</p>
       <div class="viz" aria-hidden="true">
         <div class="viz-row"><span class="viz-tag">fixed τ</span><div class="viz-bar"><div class="viz-fill before" style="--w:70%"></div></div><span class="viz-val">rigid</span></div>
         <div class="viz-row"><span class="viz-tag">conformal</span><div class="viz-bar"><div class="viz-fill after" style="--w:40%"></div></div><span class="viz-val">α-tuned</span></div>
       </div>
       <div class="foot">realized FPR <b>tracks α</b></div></div>
 
-    <div class="card reveal d2" data-detail="baseline"><span class="tag tE">E · ROBUSTNESS</span><h3>Baseline calibration</h3>
+    <div class="card reveal d2" data-detail="prioritise"><span class="tag tD">D · PRIORITISED SCAN</span><h3>Prioritised scan order</h3>
+      <p>Even after pruning, order matters. We scan the surviving candidates <b>most-probable-first</b> using the marginal first-token distribution BAIT already computes — so the likely target openings are tried first and the parallel early-stop fires sooner.</p>
+      <div class="lanes" aria-hidden="true"><div class="lane"><i style="animation-delay:0s"></i></div><div class="lane"><i style="animation-delay:.15s"></i></div><div class="lane"><i style="animation-delay:.3s"></i></div></div>
+      <div class="foot">target found early · <b>compounds</b> pruning + parallel</div></div>
+
+    <div class="card reveal" data-detail="baseline"><span class="tag tE">E · ROBUSTNESS</span><h3>Baseline calibration</h3>
       <p>Ordinary-word targets break an assumption in the paper: a benign model can score high on a common phrase. We subtract a <b>clean-text language baseline</b> from the Q-Score, so genuine backdoors keep their lift while benign common-word decoys collapse toward zero.</p>
       <div class="viz" aria-hidden="true">
         <div class="viz-row"><span class="viz-tag">raw</span><div class="viz-bar"><div class="viz-fill before" style="--w:100%"></div></div><span class="viz-val">1.00</span></div>
         <div class="viz-row"><span class="viz-tag">adjusted</span><div class="viz-bar"><div class="viz-fill after" style="--w:3%"></div></div><span class="viz-val">0.00</span></div>
       </div>
       <div class="foot">common-word FPR 1.0 → <b>0.0</b></div></div>
-
-    <div class="card reveal" data-detail="prioritise"><span class="tag tD">D · PRIORITISED SCAN</span><h3>Prioritised scan order</h3>
-      <p>Even after pruning, order matters. We scan the surviving candidates <b>most-probable-first</b> using the marginal first-token distribution BAIT already computes — so the likely target openings are tried first and the parallel early-stop fires sooner.</p>
-      <div class="lanes" aria-hidden="true"><div class="lane"><i style="animation-delay:0s"></i></div><div class="lane"><i style="animation-delay:.15s"></i></div><div class="lane"><i style="animation-delay:.3s"></i></div></div>
-      <div class="foot">target found early · <b>compounds</b> pruning + parallel</div></div>
   </div>
   </div>
 </div></div></section>
@@ -449,17 +449,17 @@
 <section id="lab"><div class="wrap">
   <div class="sec-label reveal">Interactive lab · powered by our real modules</div>
   <h2 class="title reveal"><span class="sec-num">06</span>How each improvement behaves</h2>
-  <p class="lead reveal d1">Pick a model, move the controls, watch the detector recompute. The interface is fully interactive and live in your browser.
+  <p class="lead reveal d1">Pick a model, move the controls, watch the detector recompute. The interface is fully interactive and runs live in the browser.
     Every statistic comes from our actual <span class="mono teal-text">src/core</span> modules — bootstrap Q-Score, conformal
     threshold, TOP_K_FILTER pruning and the rest — which we ran to produce this dataset, so no number here is mocked.</p>
 
   <div class="lab reveal d2">
     <div class="labhead">
       <div class="labtab active" data-p="A"><span class="k" style="color:var(--teal)">A</span>Bootstrap</div>
+      <div class="labtab" data-p="B"><span class="k" style="color:var(--amber)">B</span>Judge</div>
+      <div class="labtab" data-p="C"><span class="k" style="color:var(--coral)">C</span>Conformal</div>
       <div class="labtab" data-p="D"><span class="k" style="color:var(--indigo)">D</span>Speedup</div>
       <div class="labtab" data-p="E"><span class="k" style="color:#8b6ef0">E</span>Baseline</div>
-      <div class="labtab" data-p="C"><span class="k" style="color:var(--coral)">C</span>Conformal</div>
-      <div class="labtab" data-p="B"><span class="k" style="color:var(--amber)">B</span>Judge</div>
     </div>
     <div class="labbody">
       <div class="panel active" id="pA">
@@ -531,7 +531,7 @@
       </div>
     </div>
   </div>
-  <div class="note reveal"><b>How this demo works.</b> The controls and charts run live in your browser. The detection
+  <div class="note reveal"><b>How this demo works.</b> The controls and charts run live in the browser. The detection
     statistics were pre-computed by running our real <span class="mono">src/core</span> modules
     (<span class="mono">export_demo_data.py</span>) so the demo is instant and works fully offline — no network or GPU needed.
     To reproduce them, run that script or <span class="mono">scripts/scan_blackbox.py</span> in the repository; GPU model-zoo
@@ -580,7 +580,7 @@
 <section id="repro" aria-labelledby="repro-h"><div class="wrap"><div class="sgrid">
   <div class="srail reveal">
     <div class="sec-label">Reproduce it</div>
-    <div class="title" id="repro-h"><span class="sec-num">08</span>Everything you need to re-run this</div>
+    <div class="title" id="repro-h"><span class="sec-num">08</span>Everything needed to re-run this</div>
     <div class="rail-lead">Hardware, seeds, dataset, and the exact command that regenerates the JSON powering the interactive lab.</div>
   </div>
   <div class="scontent">
