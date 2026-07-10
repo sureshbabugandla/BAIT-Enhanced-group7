@@ -1,6 +1,6 @@
-# 🎣 BAIT-Enhanced: Large Language Model Backdoor Scanning by Inverting Attack Target
+# BAIT-Enhanced: Large Language Model Backdoor Scanning by Inverting Attack Target
 
-*🔥🔥🔥 Detecting hidden backdoors in Large Language Models with only black-box access, now with enhanced robustness, speed, and cost efficiency.*
+* Detecting hidden backdoors in Large Language Models with only black-box access, now with enhanced robustness, speed, and cost efficiency.*
 
 This repository is an **enhanced, production-ready fork** of the original research implementation of **"BAIT: Large Language Model Backdoor Scanning by Inverting Attack Target"** (IEEE S&P 2025). 
 
@@ -9,7 +9,7 @@ While the original BAIT framework achieved state-of-the-art results, this **BAIT
 ---
 
 ## Table of Contents
-- [🎣 BAIT-Enhanced: Large Language Model Backdoor Scanning by Inverting Attack Target](#-bait-enhanced-large-language-model-backdoor-scanning-by-inverting-attack-target)
+- [ BAIT-Enhanced: Large Language Model Backdoor Scanning by Inverting Attack Target](#-bait-enhanced-large-language-model-backdoor-scanning-by-inverting-attack-target)
   - [Table of Contents](#table-of-contents)
   - [Key Enhancements (BAIT-Enhanced)](#key-enhancements-bait-enhanced)
   - [News](#news)
